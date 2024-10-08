@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment folder
+/venv
+
+# Jupyter Notebook checkpoints
+/.ipynb_checkpoints
+
+# Jupyter Notebook config files
+*.ipynb_checkpoints
+
+# Logs, debug files, etc.
+*.log
+
+# Environment variables and settings
+.env
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# MyPy cache
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pylint reports
+pylint.log
+
+# Unit test / coverage results
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# pyenv folder
+.python-version
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# macOS
+.DS_Store

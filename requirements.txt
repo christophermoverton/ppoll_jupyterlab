@@ -1,0 +1,5 @@
+altair
+pandas
+numpy
+statsmodels
+jupyterlab
