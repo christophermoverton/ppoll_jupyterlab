@@ -1,152 +1,127 @@
-# 538 Presidential Poll Aggregator
 
-This project processes polling data from FiveThirtyEight (538) to produce national and battleground state poll aggregates. The goal is to offer a streamlined way to analyze U.S. presidential election polling data and calculate aggregated polling results for both national trends and specific battleground states.
+# Presidential Polling Analysis
 
-## Project Overview
+This Jupyter Notebook provides an in-depth analysis of presidential polling data, utilizing various data manipulation techniques, visualizations, and statistical adjustments. The analysis includes weighting methodologies, outlier adjustments, house effect bias adjustments, and specific breakdowns of polling data for different candidates in key battleground states.
 
-This notebook reads, processes, and analyzes polling data from 538 to derive key insights such as:
-- **National polling averages**: The overall sentiment from polls across the entire country.
-- **Battleground state averages**: Aggregated results for key battleground states that play a pivotal role in the electoral outcome.
+The data used in this notebook is sourced from **FiveThirtyEight's Presidential General Election Polls (current cycle)**, which is publicly available on the [FiveThirtyEight website](https://projects.fivethirtyeight.com/polls/president-general/). This dataset includes national and state-level polling data for the current U.S. presidential election cycle, and this analysis uses the CSV format provided by FiveThirtyEight.
 
-Using polling data scraped or sourced from FiveThirtyEight, this notebook performs data cleaning, processing, and aggregation to present meaningful insights and trends for election analysis.
+## Data Source
 
-## Table of Contents
+The primary data source is a CSV file (`president_polls.csv`) derived from FiveThirtyEight's publicly available polling data, which includes national and state-level information related to U.S. presidential elections. The file contains details such as:
+   - Pollster name
+   - Candidate names
+   - Polling methodology
+   - Pollster grades
+   - Sample sizes
+   - Poll results (e.g., support for each candidate)
 
-1. [Prerequisites](#prerequisites)
-2. [Installation](#installation)
-3. [Usage](#usage)
-4. [Data Description](#data-description)
-5. [Notebook Structure](#notebook-structure)
-6. [Results and Outputs](#results-and-outputs)
-7. [Contributing](#contributing)
-8. [License](#license)
+## Structure
 
-## Prerequisites
+### 1. **Initial Setup**
+   - **Libraries Used**: 
+     - `pandas` for data manipulation.
+     - `altair` for data visualization.
+     - `statsmodels` for smoothing functions.
+     - `numpy` for numerical computations.
+   - The notebook begins by loading the dataset and conducting preliminary inspections of the data.
 
-Before running the notebook, ensure you have the following installed:
-- Python 3.x
-- Jupyter Notebook or JupyterLab
-- Key Python libraries:
-  - `pandas`
-  - `numpy`
-  - `altair`
-  - `requests` (if you are pulling data from an API)
+### 2. **Data Cleaning and Preprocessing**
+   - The dataset is split into two groups: polls with missing state information (`df_state_na`) and polls with state-level data (`df_state_not_na`).
+   - Only polls with non-null numerical grades (grading pollster reliability) are used for further analysis.
 
-## Installation
+### 3. **Weight Calculation**
+   - A custom weighting system is implemented based on:
+     - **Pollster Grades**: Higher graded pollsters are given more weight.
+     - **Polling Methodology**: Different methodologies (e.g., live phone, online, etc.) are assigned different weights based on their reliability.
+     - **Outlier Weighting**: Polls that fall outside the typical distribution are down-weighted to mitigate their impact. This is done by identifying and assigning lower weights to outlier polls, ensuring they don't disproportionately influence the results.
+   - A new column `weight_score` is added to the dataset to reflect these weights, which combines the grades, methodologies, and outlier adjustments.
 
-1. Clone this repository or download the notebook file to your local machine.
-2. Install the required dependencies using pip:
+### 4. **House Effect Bias Adjustment**
+   - **House Effects**: This refers to the consistent bias or tendency of certain pollsters to lean towards one candidate or another. The analysis incorporates a bias adjustment to account for this, making the polling data more comparable across different pollsters.
+   - A bias factor is calculated and applied to correct the house effects, ensuring that polls from consistently biased pollsters do not skew the overall results.
+   - This adjustment is incorporated before generating the final weighted averages, contributing to more accurate tracking of candidate support over time.
 
-```bash
-pip install -r requirements.txt
-```
+### 5. **Sample Size Adjustment**
+   - Polls with missing sample sizes are handled by calculating the mean sample size and imputing missing values accordingly.
+   - Weighted averages are calculated for each candidate based on these sample sizes and pollster grades. Larger sample sizes are given more weight, as they are generally considered more reliable.
 
-Note: The `requirements.txt` should list necessary dependencies such as `pandas`, `numpy`, and `altair`.
+### 6. **Candidate Analysis**
+   - The notebook focuses on key candidates such as Donald Trump and Kamala Harris. Specific sections explore the polling data related to these candidates in critical battleground states like:
+     - **Arizona**
+     - **Nevada**
+   - For each state, weighted averages of polling data are computed over time to track changes in candidate support.
 
-## Usage
+### 7. **Visualization**
+   - Several visualizations are created to present the polling data, including:
+     - **Boxplots**: Displaying distributions of polling "house effects" by pollster and candidate, adjusted for bias.
+     - **Time Series Graphs**: Weighted average support for each candidate over time.
+     - The visualizations use `altair`, with custom color scales to distinguish between candidates (e.g., red for Donald Trump, blue for Kamala Harris).
 
-### Running the Notebook
+### 8. **Smoothing Functions**
+   - The notebook applies non-parametric LOESS smoothing using `statsmodels` to visualize trends in the polling data over time. This helps in reducing noise from short-term fluctuations and better understanding long-term trends.
 
-1. Open the notebook file (`538pollingdata.ipynb`) in Jupyter Notebook or JupyterLab.
-2. Run all cells sequentially to download, process, and analyze the 538 polling data.
-3. The final output will show:
-   - National polling aggregation: The average polling result across all states.
-   - Battleground states polling aggregation: Aggregated polling results for specific battleground states.
-   
-### Customizing the Analysis
+## Setup Instructions
 
-You can modify the following parameters for a more tailored analysis:
-- **Polling data source**: The notebook is set to read 538 polling data. You can modify the source URL or use a local polling dataset.
-- **Battleground states list**: You can edit the list of battleground states to fit your analysis needs.
+### 1. **Python Virtual Environment Setup**
 
-### Example
+To run this notebook in an isolated Python environment, it is recommended to use a virtual environment. Follow the steps below to set up a virtual environment and install all dependencies:
 
-To view national polling trends:
+1. **Create and Activate a Virtual Environment**:
+   - Open a terminal or command prompt and navigate to the project directory.
+   - Create a new virtual environment using the following command:
+     ```bash
+     python -m venv env
+     ```
+   - Activate the virtual environment:
+     - On **Windows**:
+       ```bash
+       .\env\Scripts\activate
+       ```
+     - On **macOS/Linux**:
+       ```bash
+       source env/bin/activate
+       ```
 
-```python
-# Example to aggregate national polling data
-national_aggregate = aggregate_national_polls(polling_data)
-print(national_aggregate)
-```
+2. **Install Dependencies**:
+   - Once the virtual environment is activated, install the required dependencies using the `requirements.txt` file provided in the project:
+     ```bash
+     pip install -r requirements.txt
+     ```
+   This will install all the necessary Python libraries for running the notebook, including `pandas`, `altair`, `statsmodels`, and `numpy`.
 
-To analyze battleground states:
+### 2. **Launching Jupyter Lab**
 
-```python
-# Example to aggregate battleground states polling data
-battleground_aggregate = aggregate_battleground_polls(polling_data, battleground_states)
-print(battleground_aggregate)
-```
+After setting up the virtual environment and installing the required dependencies, you can launch Jupyter Lab to run the notebook:
 
-## Data Description
+1. **Install Jupyter Lab** (if not already installed):
+   ```bash
+   pip install jupyterlab
+   ```
 
-The notebook processes polling data from FiveThirtyEight. This data includes information such as:
-- **Pollster**: The organization that conducted the poll.
-- **Date**: The date when the poll was conducted.
-- **Sample Size**: The number of respondents in the poll.
-- **National/Battleground**: Whether the poll is national or related to a specific state.
-- **Polling Results**: The percentage of respondents supporting each candidate.
+2. **Launch Jupyter Lab**:
+   - From the terminal or command prompt, use the following command to start Jupyter Lab:
+     ```bash
+     jupyter lab
+     ```
+   - This will open the Jupyter Lab interface in your web browser. From there, navigate to the notebook file (`538pollingdata.ipynb`) to begin the analysis.
 
-### Data Cleaning
+3. **Running the Notebook**:
+   - Execute the notebook cell by cell to perform the analysis, explore the weighted polling data, and generate visualizations.
 
-Before analysis, the notebook:
-- Removes invalid or incomplete data entries.
-- Normalizes dates for consistency.
-- Filters polls based on recency and reliability (e.g., polling methodology, sample size).
+### 3. **Deactivating the Virtual Environment**
+   - Once you are done, you can deactivate the virtual environment by running:
+     ```bash
+     deactivate
+     ```
 
-## Notebook Structure
+## Key Insights
 
-1. **Data Loading**: The notebook first loads the polling data, either from a local CSV or through an API request to 538.
-   
-2. **Data Cleaning**: This section handles missing values, normalizes dates, and filters polls based on user-defined parameters (e.g., poll recency, pollster rating).
-
-3. **National Polling Aggregation**: Computes national averages by aggregating results across all available polls.
-
-4. **Battleground States Aggregation**: Calculates polling aggregates for key battleground states like Florida, Pennsylvania, Wisconsin, etc.
-
-5. **Visualization**: Uses **Altair** to create interactive charts and graphs that visualize national trends and battleground states polling data.
-
-## Visualization with Altair
-
-**Altair** is a declarative statistical visualization library in Python, ideal for creating complex visualizations in a simple and intuitive way. In this notebook, Altair is used to generate interactive visualizations of polling trends.
-
-### Example:
-
-To create a line chart of national polling averages over time:
-
-```python
-import altair as alt
-
-# Example chart to visualize national polling data trends
-chart = alt.Chart(national_aggregate).mark_line().encode(
-    x='date:T',
-    y='polling_average:Q',
-    color='candidate:N'
-).properties(
-    title='National Polling Average Over Time'
-)
-
-chart.show()
-```
-
-Altair's interactivity allows you to hover over data points, zoom in, and explore the polling data trends more closely.
-
-## Results and Outputs
-
-After running the notebook, the following outputs will be generated:
-- **National Polling Average**: A summary of polling averages for national presidential election sentiment.
-- **Battleground Polling Average**: Polling results aggregated for critical battleground states.
-- **Visualizations**: Interactive graphs and charts showing trends in polling data over time, created using **Altair**.
-
-These results can be used to gain insights into the national polling trends and battleground state dynamics leading up to the presidential election.
-
-## Contributing
-
-If you would like to contribute to this project, please feel free to open an issue or submit a pull request. Contributions can include:
-- Enhancements to data aggregation methods.
-- Additional polling data sources.
-- Improvements to visualizations using **Altair**.
+- **House Effect Bias Adjustment** ensures that polls from consistently biased pollsters are corrected, making the comparison across different pollsters more reliable.
+- **Outlier Weighting** helps mitigate the effect of extreme polling results that could skew the overall analysis. By down-weighting outliers, the analysis provides a more stable picture of candidate support.
+- The analysis highlights how different polling methodologies, sample sizes, and pollster reliability affect the overall perception of candidate support.
+- By focusing on key battleground states, the analysis offers a granular look at the dynamics of the 2020 U.S. presidential election.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
