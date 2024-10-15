@@ -2,4 +2,5 @@ altair
 pandas
 numpy
 statsmodels
+scikit-learn
 jupyterlab
